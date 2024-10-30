@@ -13,6 +13,10 @@
 |
 */
 
+$router->group(['prefix' => 'api'], function () use ($router) {
+    $router->post('tasks', ['uses' => 'TaskController@store']);
+});
+
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
