@@ -39,4 +39,21 @@ class TaskTest extends TestCase
              ->seeInDatabase('tasks', ['title' => 'Valid Task']);
     }
 
+    // Test fetching all tasks
+    public function testGetAllTasks()
+    {
+        Task::factory()->count(5)->create();
+
+        $this->get('/api/tasks')
+             ->seeStatusCode(200)
+             ->seeJsonStructure([
+                 '*' => ['id', 'title', 'description', 'status', 'due_date', 'created_at', 'updated_at'],
+             ]);
+
+        $response = $this->response->getContent();
+        $tasks = json_decode($response, true);
+
+        $this->assertCount(5, $tasks);
+    }
+
 }

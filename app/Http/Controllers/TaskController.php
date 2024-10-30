@@ -37,5 +37,12 @@ class TaskController extends Controller
         return response()->json($task, Response::HTTP_CREATED);
     }
 
+    // Get all tasks
+    public function index() : JsonResponse
+    {
+        $tasks = Task::all();
+
+        return response()->json($tasks, Response::HTTP_OK);
+    }
    
 }
