@@ -76,4 +76,76 @@ class TaskTest extends TestCase
              ->seeJson(['error' => 'Task not found']);
     }
 
+     // Test fetching all tasks with pagination
+    public function testGetAllTasksWithPagination()
+    {
+        Task::factory()->count(15)->create();
+
+        $this->get('/api/tasks?page=1')
+             ->seeStatusCode(200)
+             ->seeJsonStructure([
+                 '*' => ['id', 'title', 'description', 'status', 'due_date', 'created_at', 'updated_at'],
+             ]);
+
+        $response = $this->response->getContent();
+        $tasks = json_decode($response, true);
+
+        $this->assertCount(10, $tasks);
+
+        $this->get('/api/tasks?page=2')
+             ->seeStatusCode(200);
+
+        $response = $this->response->getContent();
+        $tasks = json_decode($response, true);
+
+        $this->assertCount(5, $tasks);
+    }
+
+    // Test filtering tasks by status
+    public function testGetTasksFilteredByStatus()
+    {
+        Task::factory()->count(5)->create(['status' => 'pending']);
+        Task::factory()->count(3)->create(['status' => 'completed']);
+
+        $this->get('/api/tasks?status=pending')
+             ->seeStatusCode(200);
+
+        $response = $this->response->getContent();
+        $tasks = json_decode($response, true);
+
+        $this->assertCount(5, $tasks); 
+    }
+
+    // Test filtering tasks by due date
+    public function testGetTasksFilteredByDueDate()
+    {
+        $dueDate = Carbon::now()->addDays(7)->toDateString();
+        Task::factory()->count(4)->create(['due_date' => $dueDate]);
+        Task::factory()->create(['due_date' => Carbon::now()->addDays(3)->toDateString()]);
+
+        $this->get("/api/tasks?due_date={$dueDate}")
+             ->seeStatusCode(200);
+
+        $response = $this->response->getContent();
+        $tasks = json_decode($response, true);
+
+        $this->assertCount(4, $tasks); 
+    }
+
+    // Test searching tasks by title
+    public function testSearchTasksByTitle()
+    {
+        Task::factory()->create(['title' => 'Test Task Alpha']);
+        Task::factory()->create(['title' => 'Alpha Task']);
+        Task::factory()->create(['title' => 'Beta Task']);
+
+        $this->get('/api/tasks?title=Alpha')
+             ->seeStatusCode(200);
+
+        $response = $this->response->getContent();
+        $tasks = json_decode($response, true);
+
+        $this->assertCount(2, $tasks); 
+    }
+
 }

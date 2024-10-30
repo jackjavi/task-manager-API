@@ -37,12 +37,26 @@ class TaskController extends Controller
         return response()->json($task, Response::HTTP_CREATED);
     }
 
-    // Get all tasks
-    public function index() : JsonResponse
+    // Get all tasks with optional filters and pagination
+    public function index(Request $request) : JsonResponse
     {
-        $tasks = Task::all();
+        $query = Task::query();
 
-        return response()->json($tasks, Response::HTTP_OK);
+        if ($request->has('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        if ($request->has('due_date')) {
+            $query->whereDate('due_date', $request->input('due_date'));
+        }
+
+        if ($request->has('title')) {
+            $query->where('title', 'LIKE', '%' . $request->input('title') . '%');
+        }
+
+        $tasks = $query->paginate(10);
+
+        return response()->json($tasks->items(), Response::HTTP_OK);
     }
 
     // Get a specific task by ID
