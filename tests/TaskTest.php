@@ -56,4 +56,24 @@ class TaskTest extends TestCase
         $this->assertCount(5, $tasks);
     }
 
+    // Test updating a task with partial data
+    public function testUpdateTaskWithPartialData()
+    {
+        $task = Task::factory()->create();
+
+        $updateData = ['description' => 'Updated description'];
+        $this->put("/api/tasks/{$task->id}", $updateData)
+             ->seeStatusCode(200)
+             ->seeJson(['description' => 'Updated description'])
+             ->seeInDatabase('tasks', ['id' => $task->id, 'description' => 'Updated description']);
+    }
+
+    // Test deleting a non-existing task
+    public function testDeleteNonExistingTask()
+    {
+        $this->delete('/api/tasks/9999')
+             ->seeStatusCode(404)
+             ->seeJson(['error' => 'Task not found']);
+    }
+
 }

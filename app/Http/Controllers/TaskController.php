@@ -44,5 +44,60 @@ class TaskController extends Controller
 
         return response()->json($tasks, Response::HTTP_OK);
     }
+
+    // Get a specific task by ID
+    public function show(int $id) : JsonResponse
+    {
+        $task = Task::find($id);
+
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json($task, Response::HTTP_OK);
+    }
+
+    // Update a task by ID
+    public function update(Request $request, int $id) : JsonResponse
+    {
+        $task = Task::find($id);
+
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $request->merge([
+            'status' => strtolower($request->status ?? 'pending')
+        ]);
+
+    $validator = Validator::make($request->all(), [
+        'title' => 'nullable|string',
+        'description' => 'nullable|string',
+        'due_date' => 'nullable|date|after:today',
+    ]);
+        
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+
+        $task->update($request->only(['title', 'description', 'status', 'due_date']));
+
+        return response()->json($task, Response::HTTP_OK);
+    }
+
+    // Delete a task by ID
+    public function destroy(int $id) : JsonResponse
+    {
+        $task = Task::find($id);
+
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $task->delete();
+
+        return response()->json(['message' => 'Task deleted successfully'], Response::HTTP_OK);
+    }
    
 }
