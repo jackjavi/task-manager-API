@@ -1,4 +1,3 @@
-````markdown
 # Task Manager API
 
 This is a Task Manager API built with Lumen, a lightweight PHP framework. It provides RESTful endpoints to manage tasks, including creating, updating, and deleting tasks.
@@ -123,7 +122,6 @@ To run tests using PHPUnit, execute the following command from the `/vagrant` di
 ```bash
 ./vendor/bin/phpunit tests
 ```
-````
 
 This will run all test cases in the `tests` directory, verifying the functionality of the API.
 
@@ -205,7 +203,3 @@ Replace `{id}` with the ID of the task you want to update or delete.
 ## License
 
 This project is open-source and available for modification and use under the MIT License.
-
-```
-
-```
