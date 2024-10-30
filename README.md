@@ -21,7 +21,6 @@ This is a Task Manager API built with Lumen, a lightweight PHP framework. It pro
     ```bash
     git clone https://github.com/jackjavi/task-manager-API.git
     ```
-````
 
 2. **Install Dependencies**
 
@@ -209,3 +208,4 @@ This project is open-source and available for modification and use under the MIT
 ```
 
 ```
+````
